@@ -8,7 +8,7 @@ const checkLogin = async(req,res,next) =>{
         const {username,password} = req.body
         const user = await User.findOne({username})
         if(!user){
-            return res.status(400).json({success:false,message:"User not found"})
+            return res.status(404).json({success:false,message:"User not found"})
         }
         if(user){
             isValidPassword = await bcrypt.compare(password,user.password)
@@ -17,7 +17,7 @@ const checkLogin = async(req,res,next) =>{
                 return next()
              }
              else{
-                 return res.status(401).json({success:false,message:"Authentication failed"})
+                 return res.status(403).json({success:false,message:"Authentication failed"})
              }
         }
     }
