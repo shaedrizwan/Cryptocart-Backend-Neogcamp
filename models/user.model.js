@@ -32,7 +32,8 @@ const userSchema = new Schema({
         required:["Enter the password"]
     },
     wishlist:[{type:Schema.Types.ObjectId, ref:Product}],
-    cart:[cartSchema]
+    cart:[cartSchema],
+    address:[String]
 })
 
 

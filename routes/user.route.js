@@ -1,5 +1,5 @@
 const express = require('express')
-const { checkLogin } = require('../middlewares/auth.middleware')
+const { checkLogin, verifyToken } = require('../middlewares/auth.middleware')
 const router = express.Router()
 const User = require('../models/user.model')
 const jwt = require('jsonwebtoken')
@@ -20,12 +20,36 @@ router.route('/signup')
         }
     })
 
-router.use(checkLogin)
+router.use("/login",checkLogin)
 router.route('/login')
     .post((req,res)=>{
         const user = req.user
         const token = jwt.sign({userId:user._id},process.env.TOKEN_SECRET,{expiresIn:'24h'})
         res.json({success:true,message:"Login successful",user:user.username,token})
+    })
+
+router.use(verifyToken)
+router.route("/address")
+    .get(async(req,res)=>{
+        try{
+            const userId = req.user
+            const user = await User.findById(userId)
+            res.json({success:true,address:user.address})
+        }catch(err){
+            res.status(500).json({success:false,error:err.message})
+        }
+    })
+    .post(async(req,res)=>{
+        try{
+            const userId = req.user
+            const {newAddress} = req.body
+            const user = await User.findById(userId)
+            const updateAddress = user.address.push(newAddress)
+            const updatedUser = await user.save()
+            res.json({success:true,addedAddress:newAddress})
+        }catch(err){
+            res.status(500).json({success:false,error:err.message})
+        }
     })
 
 module.exports = router
