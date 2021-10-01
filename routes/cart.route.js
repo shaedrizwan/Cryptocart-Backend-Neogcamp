@@ -59,4 +59,20 @@ router.route('/remove')
         }
     })
 
+router.route('/emptyCart')
+    .post(async(req,res)=>{
+        try{
+            const userId = req.user
+            const user = await User.findById(userId)
+            for(let i=user.cart.length;i>0;i--){
+                const removeProduct = user.cart.pop()
+            }
+            const updatedCart = await user.save()
+            res.json({success:true,message:"Cart cleared successfully"})
+        }
+        catch(err){
+            res.status(500).json({success:false,error:err.message})
+        }
+    })
+
 module.exports = router
