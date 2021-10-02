@@ -52,4 +52,18 @@ router.route("/address")
         }
     })
 
+router.route('/removeAddress')
+    .post(async(req,res)=>{
+        try{
+            const userId = req.user
+            const {address} = req.body
+            const user = await User.findById(userId)
+            const updatedAddress = user.address.pop(address)
+            const updatedUser = await user.save()
+            res.json({success:true,message:"Address removed successfully!"})
+        }catch(err){
+            res.json({success:false,error:err.message})
+        }
+    })
+
 module.exports = router
